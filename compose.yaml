@@ -1,0 +1,13 @@
+services:
+  likestudio:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATA_DIR: /data
+    volumes:
+      - likestudio-data:/data
+    restart: unless-stopped
+volumes:
+  likestudio-data:

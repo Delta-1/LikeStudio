@@ -1,0 +1,21 @@
+{
+  "name": "likestudio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Estúdio de conteúdo para Instagram com pesquisa, carrosséis e vídeos usando sua chave Gemini.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/*.test.js",
+    "check": "node --check server.js && node --check public/app.js && node --check lib/gemini.js && node --check lib/jobs.js && node --check lib/media.js",
+    "test:ui": "node tests/browser-server.js"
+  },
+  "dependencies": {
+    "sharp": "^0.34.5",
+    "fflate": "^0.8.2"
+  }
+}
