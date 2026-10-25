@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { zipSync, strToU8 } from 'fflate';
 import { Store } from './lib/store.js';
-import { Gemini } from './lib/gemini.js';
+import { Gemini, normalizeApiKey } from './lib/gemini.js';
 import { JobRunner, publicJob } from './lib/jobs.js';
 import { AppError, MODELS, validateSettings } from './lib/content.js';
 
@@ -75,6 +75,7 @@ export function createApp({ dataDir = process.env.DATA_DIR || join(ROOT, '.data'
           rate(`settings:${ws}`, 10); const input = await body(req), patch = validateSettings(input); let models;
           if (input.apiKey !== undefined) {
             if (input.apiKey === '') throw new AppError('Use Desconectar para remover uma chave.');
+            input.apiKey = normalizeApiKey(input.apiKey);
             models = await provider.validateKey(input.apiKey);
             if (!patch.models) patch.models = { ...MODELS };
           }
@@ -127,7 +128,8 @@ export function createApp({ dataDir = process.env.DATA_DIR || join(ROOT, '.data'
       await sendFile(req, res, file);
     } catch (error) {
       if (res.headersSent) { res.destroy(); return; }
-      json(res, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'Não foi possível concluir a solicitação.' });
+      if (req.method === 'PUT' && req.url === '/api/settings' && error instanceof AppError && error.code) console.warn(JSON.stringify({ event: 'api_key_connection_failed', code: error.code, status: error.status }));
+      json(res, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'Não foi possível concluir a solicitação.', code: error instanceof AppError ? error.code : undefined });
     }
   });
   server.requestTimeout = 30000; server.headersTimeout = 10000;

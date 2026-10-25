@@ -8,7 +8,7 @@ O usuário conecta sua chave, conclui o onboarding, cria conteúdo pelo assisten
 
 ## Testes automatizados
 
-11 cenários passando com `npm test`:
+16 cenários passando com `npm test`:
 
 - Chave cifrada no SQLite/WAL, sem exposição na sessão.
 - Isolamento de conteúdo e arquivos entre sessões; bloqueio de origem externa.
@@ -44,3 +44,20 @@ Galeria e assistente também conferidos em um iframe de teste com viewport de 39
 - Healthcheck `/healthz` confirma disponibilidade de FFmpeg/FFprobe.
 - Persistência depende do volume montado em `/data`.
 - Acesso e cota dos modelos serão confirmados quando o usuário conectar uma chave válida.
+
+
+## Correção da conexão Gemini
+
+Os registros de produção mostraram tentativas de conexão rejeitadas com HTTP 400 na validação local. A validação anterior limitava o campo a 200 caracteres e exigia um alfabeto fixo; em caso de erro, a interface apagava o valor digitado.
+
+Correções verificadas:
+
+- Normalização de espaços, quebras de linha, caracteres invisíveis, aspas, prefixos `GEMINI_API_KEY=`, `GOOGLE_API_KEY=` e `x-goog-api-key:`.
+- Credenciais tratadas como valores opacos, com limite de 4096 caracteres. A autenticidade continua sendo verificada pelo Google; não há liberação por formato apenas.
+- Chave normalizada antes de cifrar; uma falha não sobrescreve a conexão válida anterior.
+- Causas conhecidas de erro do Google traduzidas para mensagens úteis, sem retornar mensagens brutas, metadados ou segredos.
+- Chave permanece no campo mascarado após erro, sem ser gravada no armazenamento do navegador nem em atributos HTML.
+- Enter envia a validação; campo e botões ficam bloqueados durante a consulta e são liberados ao final.
+- Diagnóstico no servidor contém apenas código conhecido de falha e status, sem a chave.
+
+No navegador de testes, uma máscara inválida produziu a mensagem de erro e manteve o valor preenchido. Em seguida, uma chave fictícia com prefixo e aspas avançou para a etapa de identidade. Os testes do adaptador usam respostas controladas do Google. A chave real do usuário não foi acessada nem usada.

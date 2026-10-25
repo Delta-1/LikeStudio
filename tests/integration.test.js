@@ -72,3 +72,12 @@ test('persistência conserva chave e conteúdo após reabrir banco; fila interro
   store=new Store(directory);const provider=new FakeProvider();const runner=new JobRunner(store,provider);
   assert.equal(store.apiKey('workspace-test'),TEST_KEY);assert.equal(store.job('job-test','workspace-test').status,'interrupted');assert.deepEqual(store.job('job-test','workspace-test').checkpoints.images,[0]);assert.equal(provider.calls.image,0);runner.stop();store.close();
 });
+test('conexão normaliza a chave antes de cifrar e erro não substitui a chave já conectada',async t=>{
+  const f=await fixture(t);
+  await f.json('/settings','PUT',{apiKey:`export GEMINI_API_KEY="${TEST_KEY}"`});
+  const ws=f.app.store.db.prepare('SELECT id FROM workspaces').get().id;
+  assert.equal(f.app.store.apiKey(ws),TEST_KEY);
+  const invalid=await f.req('/settings','PUT',{apiKey:'••••••••••••••••••••••••'});
+  assert.equal(invalid.status,400);const error=await invalid.json();assert.equal(error.code,'KEY_FORMAT');
+  assert.equal((await f.json('/session')).connected,true);assert.equal(f.app.store.apiKey(ws),TEST_KEY);
+});

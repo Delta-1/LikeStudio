@@ -81,13 +81,16 @@ function modalLayout(content,total,footer) {
   return `<div class="modal-head"><div class="wordmark">like<span>studio</span><span style="color:var(--purple)">.</span></div>${iconBtn('close-wizard','Fechar','close',state.busy?'disabled':'')}</div><div class="step-track" aria-label="Etapa ${state.step+1} de ${total}">${Array.from({length:total},(_,i)=>`<i class="${i<=state.step?'done':''}"></i>`).join('')}</div><div class="modal-content"><div class="eyebrow" style="margin-bottom:12px">${title}</div>${content}${state.error?`<p class="form-error" role="alert">${esc(state.error)}</p>`:''}</div><div class="modal-footer">${footer}</div>`;
 }
 function renderWizard() {
-  const dialog = $('#wizard'); let content='',footer='';
+  const dialog = $('#wizard');
+  // Keep a failed attempt in the masked input only, never in storage or HTML attributes.
+  const previousKey = state.wizard === 'connect' && state.step === 1 ? dialog.querySelector('#api-key')?.value || '' : '';
+  let content='',footer='';
   if (state.wizard==='connect') {
     if (state.step===0) {
       content=`<h2>Como você quer começar?</h2><p class="muted">Conecte sua conta de IA uma vez. Depois, é só trazer as ideias.</p><div class="question-options">${option('connect-start','have','Já tenho uma chave Gemini','Conectar e começar a criar.','key',false)}${option('connect-start','need','Ainda preciso de uma chave','Veja onde criar sua chave no Google AI Studio.','globe',false)}</div><div class="notice">${icon('info')}Pesquisa, imagens e vídeos usam os créditos da sua própria conta Gemini. Você controla o uso no Google.</div>`;
       footer=`${btn('close-wizard','Explorar primeiro',null,'ghost')}<span class="step-label">1 de 3 · Conexão</span>`;
     } else if (state.step===1) {
-      content=`<h2>Vamos conectar sua IA.</h2><p class="muted">Cole a chave Gemini do seu projeto. Ela será validada sem gerar conteúdo pago e guardada de forma protegida.</p><label for="api-key">Chave da API Gemini</label><div class="key-input"><input id="api-key" type="password" placeholder="Cole sua chave aqui" autocomplete="off" spellcheck="false" maxlength="200" ${state.busy?'disabled':''}>${iconBtn('show-key','Mostrar ou ocultar chave','eye')}</div><div class="help-link"><span>Você só precisa configurar uma vez.</span><a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer">Criar chave ${icon('external')}</a></div>${state.needsKey?'<div class="notice">'+icon('info')+'<div>No Google AI Studio, abra API Keys, crie uma chave e habilite o faturamento do projeto para os modelos pagos. Volte e cole a chave acima.</div></div>':''}<div class="notice">${icon('key')}Sua chave não aparece na galeria, nos downloads nem no código do site.</div>`;
+      content=`<h2>Vamos conectar sua IA.</h2><p class="muted">Cole a chave Gemini do seu projeto. Ela será validada sem gerar conteúdo pago e guardada de forma protegida.</p><label for="api-key">Chave da API Gemini</label><div class="key-input"><input id="api-key" type="password" placeholder="Cole sua chave aqui" autocomplete="off" spellcheck="false" maxlength="4096" autocapitalize="none" autocorrect="off" enterkeyhint="go" ${state.busy?'disabled':''}>${iconBtn('show-key','Mostrar ou ocultar chave','eye')}</div><div class="help-link"><span>Você só precisa configurar uma vez.</span><a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer">Criar chave ${icon('external')}</a></div>${state.needsKey?'<div class="notice">'+icon('info')+'<div>No Google AI Studio, abra API Keys, crie uma chave e habilite o faturamento do projeto para os modelos pagos. Volte e cole a chave acima.</div></div>':''}<div class="notice">${icon('key')}Sua chave não aparece na galeria, nos downloads nem no código do site.</div>`;
       footer=`${btn('wizard-back','Voltar','back','ghost',state.busy?'disabled':'')}${btn('verify-key',state.busy?'Validando…':'Validar e continuar',state.busy?'clock':'arrow','primary',state.busy?'disabled':'')}`;
     } else {
       const b=state.connectBrand;
@@ -109,6 +112,7 @@ function renderWizard() {
     footer=`${state.step?btn('wizard-back','Voltar','back','ghost',state.busy?'disabled':''):`<span class="step-label">1 de 4 · Formato</span>`}${btn('wizard-next',state.busy?'Criando…':state.step===3?'Criar conteúdo':'Continuar',state.step===3?'spark':'arrow','primary',state.busy||state.step===3&&d.format==='reel'&&!state.session.videoAvailable?'disabled':'')}`;
     dialog.innerHTML=modalLayout(content,4,footer);
   }
+  if (previousKey && dialog.querySelector('#api-key')) dialog.querySelector('#api-key').value = previousKey;
   if (!dialog.open) dialog.showModal();
   requestAnimationFrame(()=>{ const focus=dialog.querySelector('textarea,input:not([type=hidden]),.option.selected,button.btn.primary'); if(focus&&!state.busy) focus.focus({preventScroll:true}); });
 }
@@ -169,7 +173,7 @@ async function handle(action,el) {
     case 'show-key':if($('#api-key'))$('#api-key').type=$('#api-key').type==='password'?'text':'password';break;
     case 'verify-key':{
       const key=$('#api-key').value.trim();if(!key){state.error='Cole sua chave para continuar.';renderWizard();return;}
-      state.busy=true;state.error='';el.disabled=true;el.textContent='Validando…';
+      state.busy=true;state.error='';renderWizard();
       try{const result=await saveSettings({apiKey:key});state.models=result.models||[];state.step=2;state.connectBrand={...state.session.settings};render();}
       catch(e){state.error=e.message;}finally{state.busy=false;renderWizard();}break;
     }
@@ -218,6 +222,7 @@ document.addEventListener('click',async event=>{
   try{await handle(el.dataset.action,el);}catch(e){toast(e.message);}
 });
 document.addEventListener('keydown',event=>{
+  if(event.target.id==='api-key'&&event.key==='Enter'&&!state.busy){event.preventDefault();$('#wizard [data-action="verify-key"]')?.click();return;}
   const card=event.target.closest('.creation');if(card&&['Enter',' '].includes(event.key)){event.preventDefault();handle('open',card).catch(e=>toast(e.message));}
   if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&state.wizard==='create'){event.preventDefault();const next=$('[data-action="wizard-next"]');if(next&&!next.disabled)next.click();}
 });
