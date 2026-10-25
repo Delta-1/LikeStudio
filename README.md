@@ -59,7 +59,7 @@ O repositório inclui `Dockerfile` com FFmpeg/fontes e `railway.json` com health
 4. Gere um domínio HTTPS para a porta 3000 ou a porta fornecida pelo Railway.
 5. Abra o site e conecte sua chave no onboarding.
 
-Não use somente GitHub Pages: a proteção das chaves, a fila, a pesquisa e a renderização de vídeos exigem o servidor Node. O frontend e o backend são servidos no mesmo domínio. Um proxy deve preservar o cabeçalho Host.
+O GitHub Pages abre o `index.html` da raiz e encaminha automaticamente para [o LikeStudio publicado](https://likestudio-production.up.railway.app/). Se o redirecionamento estiver desativado no navegador, a página oferece o botão **Entrar no LikeStudio**. A proteção das chaves, a fila, a pesquisa e a renderização de vídeos usam o servidor Node. O frontend e o backend são servidos no mesmo domínio. Um proxy deve preservar o cabeçalho Host.
 
 ## Variáveis
 
