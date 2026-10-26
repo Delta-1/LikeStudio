@@ -30,9 +30,21 @@ Os prompts de pesquisa, direção editorial, roteiro e imagens estão em `lib/co
 
 ## Modelo visual padrão: CAPISOL Solar
 
-Novas criações começam no estilo **CAPISOL Solar**, baseado no painel de referência fornecido: azul-marinho `#0B2D5B`, amarelo `#F6C300`, branco `#FFFFFF`, cinza `#E9EEF4`, títulos geométricos em negrito (Montserrat quando instalada, DejaVu Sans no Docker), fotos ilustrativas de painéis, casas e técnicos, curvas solares e cantos arredondados. A marca configurada é preservada; sem nome configurado, o modelo usa CAPISOL. O sistema compõe a assinatura tipográfica e os elementos gráficos; não reproduz o símbolo original da capivara.
+Novas criações começam no estilo **CAPISOL Solar**, baseado no painel de referência fornecido: azul-marinho `#0B2D5B`, amarelo `#F6C300`, branco `#FFFFFF`, cinza `#E9EEF4`, títulos geométricos em negrito (Montserrat Regular/Bold incluída no projeto e instalada no Docker), fotos ilustrativas de painéis, casas e técnicos, curvas solares e cantos arredondados. A marca configurada é preservada; sem nome configurado, o modelo usa CAPISOL. A imagem original do painel é enviada ao Gemini como referência visual nas imagens solares, em conjunto com o prompt. O sistema compõe a assinatura tipográfica e os elementos gráficos; não reproduz o símbolo original da capivara.
 
 A aba Modelos oferece institucional, serviços, economia, guia, vídeo e orçamento. No assistente, escolha o objetivo (também promoção e depoimento). Roteiro, imagem, cena gerada e composição PNG/MP4 compartilham a direção visual. Capas escuras e internas claras mantêm a hierarquia, com chamada final e margem para Stories/Reels. A paleta solar é fixa; os outros estilos continuam usando a cor configurada. As criações anteriores mantêm sua identidade original. O modelo não copia a alegação de 95% nem inventa preços, depoimentos ou contatos.
+
+## Panfletos, cartões e propagandas
+
+- **Panfleto A5**: 148 × 210 mm finais, sangria de 3 mm, PNG 1819 × 2551 a 300 dpi e PDF com TrimBox/BleedBox.
+- **Cartão de visita**: frente e verso, 90 × 50 mm finais, sangria de 3 mm, PNG 1134 × 661 a 300 dpi e PDF com duas páginas.
+- **Propaganda**: feed 1080 × 1350, story 1080 × 1920, quadrado 1080 × 1080 ou horizontal 1920 × 1080.
+- Assistente com nome, função, telefone/WhatsApp, e-mail, site, endereço, oferta e CTA. Informe ao menos um contato para cartão. Contatos podem ser salvos em Ajustes para preencher próximas criações. Não há envio automático para redes sociais.
+- Composições: institucional clara, serviço/técnico, economia, capa escura ou interna clara. O padrão automático usa o objetivo e a posição no carrossel. Imagens realistas à direita, área de leitura à esquerda, curvas amarelas e CTA; paleta fixa CAPISOL. Textos e contatos são compostos pelo servidor.
+- O PDF acompanha o ZIP e pode ser baixado separadamente. Edições de título/corpo atualizam também o PDF, sem novas chamadas de IA.
+- PDFs usam imagens RGB. Confira o arquivo com a gráfica para conversão de cor, perfil, corte e outros requisitos específicos. Não há conversão CMYK ou certificação PDF/X.
+
+A licença OFL da fonte Montserrat está em `public/fonts/OFL.txt`. O painel de referência fornecido pelo usuário está em `public/capisol-reference.jpg` e pode ser consultado na aba Modelos.
 
 ## Executar
 

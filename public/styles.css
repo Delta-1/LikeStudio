@@ -20,3 +20,8 @@ dialog{border:1px solid var(--line);border-radius:22px;background:var(--panel);c
 .template-art.solar-light{background:radial-gradient(ellipse at 110% 10%,#F6C300 0 22%,transparent 22.5%),linear-gradient(150deg,#fff,#E9EEF4);color:#0B2D5B}
 .template-art.solar-dark h3,.style-preview.solar strong{color:#F6C300}.template-art.solar-light .eyebrow{color:#0B2D5B}.template-art.solar-dark .eyebrow{color:#E9EEF4}
 .solar-summary{display:flex;align-items:center;gap:9px;padding:15px;margin-top:18px;border:1px solid var(--line);border-radius:12px}.solar-summary strong{font-size:.8rem}.solar-summary p{font-size:.7rem;line-height:1.5;color:var(--muted);margin:5px 0 0}.solar-swatch{width:18px;height:28px;flex-shrink:0;border-radius:6px;border:1px solid #ffffff33}.solar-swatch.navy{background:#0B2D5B}.solar-swatch.yellow{background:#F6C300}.solar-swatch.white{background:#fff}
+
+@font-face{font-family:Montserrat;src:url('/fonts/Montserrat-Regular.ttf') format('truetype');font-weight:400;font-display:swap}@font-face{font-family:Montserrat;src:url('/fonts/Montserrat-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+.template-art.solar-dark h3,.template-art.solar-light h3,.style-preview.solar{font-family:Montserrat,sans-serif}.material-fields{margin-top:18px;gap:15px}.reference-panel{border:1px solid var(--line);border-radius:12px;margin-bottom:24px;padding:16px}.reference-panel img{display:block;width:100%;height:auto;border-radius:9px;margin-top:16px}.reference-panel p{font-size:.76rem;color:var(--muted);margin:12px 0 0}.preview-image{height:auto}.filters{flex-wrap:wrap}.template-art .eyebrow{max-width:90%}
+
+.review-contacts{font-size:.76rem;line-height:1.5;margin:16px 0;overflow-wrap:anywhere}.review-contacts p{margin:6px 0;color:var(--muted)}

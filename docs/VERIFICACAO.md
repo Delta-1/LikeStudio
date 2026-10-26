@@ -1,6 +1,6 @@
 # Verificação — LikeStudio
 
-Data: 25/10/2026.
+Data: 26/10/2026.
 
 ## História verificada
 
@@ -8,7 +8,7 @@ O usuário conecta sua chave, conclui o onboarding, cria conteúdo pelo assisten
 
 ## Testes automatizados
 
-22 cenários passando com `npm test`:
+30 cenários passando com `npm test`:
 
 - Chave cifrada no SQLite/WAL, sem exposição na sessão.
 - Isolamento de conteúdo e arquivos entre sessões; bloqueio de origem externa.
@@ -76,3 +76,14 @@ O novo erro foi reportado após a conexão da chave. Os registros mostraram cham
 - As falhas registram somente etapa, operação, modelo e código conhecido. Nenhum prompt, chave ou mensagem bruta do Google é registrado.
 
 Seis novos testes cobrem seleção por catálogo, ausência de modalidade, formato alternativo de schema, ausência de repetição em cota, PCM e o caminho completo do servidor usando o adaptador Gemini real com HTTP controlado até produzir PNG de 1080 × 1350. A geração paga com a conta do usuário não foi executada.
+
+## Materiais e fidelidade CAPISOL
+
+- Referência visual real enviada em `inlineData` nas solicitações solares de imagem, com teste do payload e assinatura JPEG. O painel não é usado como fonte de dados comerciais.
+- Montserrat Regular/Bold com licença OFL incluída, instalada no Docker e na integração contínua.
+- Panfleto A5 e cartão com duas faces: caminho HTTP completo, PNG 300 dpi, PDF com dimensões físicas e TrimBox de 3 mm, ZIP e atualização do PDF após edição sem geração adicional.
+- Propagandas exportadas nas quatro proporções; contatos validados e persistidos por espaço nas configurações.
+- No navegador de teste, fluxo de cartão concluído com contato fictício, seleção CAPISOL, confirmação de 90 × 50 mm / duas faces, prévia horizontal e link de download do PDF.
+- PDFs usam RGB; conversão CMYK/PDF-X e requisitos específicos da gráfica não são implementados.
+
+As chamadas pagas do usuário não foram executadas. Os fundos de teste são sintéticos e não avaliam a qualidade fotográfica de uma geração real.

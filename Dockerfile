@@ -6,6 +6,7 @@ RUN npm ci --omit=dev --no-audit --no-fund
 COPY server.js ./
 COPY lib ./lib
 COPY public ./public
+RUN mkdir -p /usr/local/share/fonts/likestudio && cp public/fonts/*.ttf /usr/local/share/fonts/likestudio/ && fc-cache -f
 ENV NODE_ENV=production PORT=3000 DATA_DIR=/data
 EXPOSE 3000
 CMD ["node", "server.js"]

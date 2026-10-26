@@ -13,7 +13,7 @@ import { JobRunner, publicJob } from './lib/jobs.js';
 import { AppError, MODELS, validateSettings } from './lib/content.js';
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url));
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.mp4': 'video/mp4', '.txt': 'text/plain; charset=utf-8', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.pdf': 'application/pdf', '.png': 'image/png', '.mp4': 'video/mp4', '.txt': 'text/plain; charset=utf-8', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2' };
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }
 async function body(req) {
   if (!req.headers['content-type']?.startsWith('application/json')) throw new AppError('Envie os dados como JSON.', 415);
@@ -116,13 +116,14 @@ export function createApp({ dataDir = process.env.DATA_DIR || join(ROOT, '.data'
             res.setHeader('Content-Security-Policy', "sandbox allow-popups; default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; base-uri 'none'; form-action 'none'");
             res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.end(job.research?.suggestions || '<p>Sem sugestões de pesquisa.</p>'); return;
           }
-          if (action === 'files' && ['GET', 'HEAD'].includes(req.method) && /^(slide-\d{1,2}\.png|video\.mp4|legenda\.txt)$/.test(filename || '')) {
+          if (action === 'files' && ['GET', 'HEAD'].includes(req.method) && /^(slide-\d{1,2}\.png|video\.mp4|legenda\.txt|impressao\.pdf)$/.test(filename || '')) {
             return sendFile(req, res, join(runner.dir(job), filename), new URL(req.url, 'http://localhost').searchParams.has('download') ? filename : undefined);
           }
           if (action === 'download' && req.method === 'GET') {
             if (job.status !== 'completed') throw new AppError('Aguarde a criação finalizar para baixar.', 409);
             const files = { 'legenda.txt': await readFile(join(runner.dir(job), 'legenda.txt')), 'roteiro.json': strToU8(JSON.stringify({ idea: job.brief.idea, script: job.script, sources: job.research?.sources || [], checkedAt: job.research?.checkedAt }, null, 2)) };
             for (let i = 0; i < job.brief.count; i++) files[`pagina-${String(i + 1).padStart(2, '0')}.png`] = [await readFile(join(runner.dir(job), `slide-${i}.png`)), { level: 0 }];
+            if (['flyer','business-card'].includes(job.brief.format)) files['impressao.pdf'] = [await readFile(join(runner.dir(job),'impressao.pdf')), {level:0}];
             if (job.video) files['video.mp4'] = [await readFile(join(runner.dir(job), 'video.mp4')), { level: 0 }];
             res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename="likestudio-${id.slice(0, 8)}.zip"` }); res.end(zipSync(files)); return;
           }
