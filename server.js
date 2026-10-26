@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { zipSync, strToU8 } from 'fflate';
 import { Store } from './lib/store.js';
 import { Gemini, normalizeApiKey } from './lib/gemini.js';
+import { selectModels } from './lib/models.js';
 import { JobRunner, publicJob } from './lib/jobs.js';
 import { AppError, MODELS, validateSettings } from './lib/content.js';
 
@@ -77,7 +78,7 @@ export function createApp({ dataDir = process.env.DATA_DIR || join(ROOT, '.data'
             if (input.apiKey === '') throw new AppError('Use Desconectar para remover uma chave.');
             input.apiKey = normalizeApiKey(input.apiKey);
             models = await provider.validateKey(input.apiKey);
-            if (!patch.models) patch.models = { ...MODELS };
+            patch.models = selectModels(models, patch.models);
           }
           const value = store.settings(ws, patch, input.apiKey); return json(res, 200, { ...value, id: undefined, models });
         }
@@ -88,6 +89,14 @@ export function createApp({ dataDir = process.env.DATA_DIR || join(ROOT, '.data'
         if (path === '/api/models' && req.method === 'GET') {
           rate(`models:${ws}`, 6); const key = store.apiKey(ws); if (!key) throw new AppError('Conecte sua chave primeiro.', 409);
           return json(res, 200, { models: await provider.validateKey(key) });
+        }
+        if (path === '/api/models/auto' && req.method === 'POST') {
+          rate(`models:${ws}`, 6); const key = store.apiKey(ws);
+          if (!key) throw new AppError('Conecte sua chave primeiro.', 409);
+          const available = await provider.validateKey(key);
+          const models = selectModels(available);
+          const value = store.settings(ws, { models });
+          return json(res, 200, { settings: value.settings, models: available });
         }
         if (path === '/api/jobs' && req.method === 'GET') return json(res, 200, { jobs: store.jobs(ws).map(j => publicJob(j, true)) });
         if (path === '/api/jobs' && req.method === 'POST') {

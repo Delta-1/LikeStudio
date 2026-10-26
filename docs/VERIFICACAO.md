@@ -8,7 +8,7 @@ O usuário conecta sua chave, conclui o onboarding, cria conteúdo pelo assisten
 
 ## Testes automatizados
 
-16 cenários passando com `npm test`:
+22 cenários passando com `npm test`:
 
 - Chave cifrada no SQLite/WAL, sem exposição na sessão.
 - Isolamento de conteúdo e arquivos entre sessões; bloqueio de origem externa.
@@ -61,3 +61,18 @@ Correções verificadas:
 - Diagnóstico no servidor contém apenas código conhecido de falha e status, sem a chave.
 
 No navegador de testes, uma máscara inválida produziu a mensagem de erro e manteve o valor preenchido. Em seguida, uma chave fictícia com prefixo e aspas avançou para a etapa de identidade. Os testes do adaptador usam respostas controladas do Google. A chave real do usuário não foi acessada nem usada.
+
+
+## Compatibilidade de modelos e geração
+
+O novo erro foi reportado após a conexão da chave. Os registros mostraram chamadas de retomada da criação, sem falha de autenticação correspondente. A integração foi alterada para evitar nomes fixos indisponíveis e formatos incompatíveis entre etapas.
+
+- Modelos são consultados em `models.list`, escolhidos por modalidade e método `generateContent`, e conferidos também em tarefas antigas retomadas.
+- Pesquisa, roteiro, imagens e narração usam Generate Content REST; somente vídeos Omni continuam na Interactions API.
+- O roteiro envia o schema no campo de geração correto; uma rejeição explícita de schema desconhecido admite uma única tentativa no formato REST alternativo.
+- Cotas, créditos, autenticação e timeout não provocam repetição automática da geração nem troca de modelo pago.
+- Fontes são extraídas de `groundingMetadata`, sem aceitar URLs inventadas no texto.
+- Narração aceita WAV e PCM L16, incluindo conversão para WAV.
+- As falhas registram somente etapa, operação, modelo e código conhecido. Nenhum prompt, chave ou mensagem bruta do Google é registrado.
+
+Seis novos testes cobrem seleção por catálogo, ausência de modalidade, formato alternativo de schema, ausência de repetição em cota, PCM e o caminho completo do servidor usando o adaptador Gemini real com HTTP controlado até produzir PNG de 1080 × 1350. A geração paga com a conta do usuário não foi executada.

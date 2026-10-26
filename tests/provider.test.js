@@ -4,14 +4,14 @@ import { Gemini } from '../lib/gemini.js';
 import { MODELS, validateBrief } from '../lib/content.js';
 import { brief, TEST_KEY } from './helpers.js';
 const response = content => new Response(JSON.stringify({status:'completed',steps:[{type:'model_output',content}]}),{status:200});
-test('adaptador usa Interactions REST e extrai somente os blocos documentados',async()=>{
+test('imagens usam Generate Content REST e leem inlineData',async()=>{
   let payload,headers;
-  const gemini=new Gemini(async(url,options)=>{assert.equal(url,'https://generativelanguage.googleapis.com/v1beta/interactions');payload=JSON.parse(options.body);headers=options.headers;return response([{type:'image',mime_type:'image/png',data:Buffer.from('image-bytes').toString('base64')}]);});
+  const gemini=new Gemini(async(url,options)=>{assert.equal(url,`https://generativelanguage.googleapis.com/v1beta/models/${MODELS.image}:generateContent`);payload=JSON.parse(options.body);headers=options.headers;return new Response(JSON.stringify({candidates:[{content:{parts:[{inlineData:{mimeType:'image/png',data:Buffer.from('image-bytes').toString('base64')}}]},finishReason:'STOP'}]}));});
   const output=await gemini.image(TEST_KEY,{visual:'a notebook'},validateBrief(brief),{color:'#8b5cf6'},0,MODELS);
-  assert.equal(output.toString(),'image-bytes');assert.equal(headers['x-goog-api-key'],TEST_KEY);assert.equal(payload.store,false);assert.deepEqual(payload.response_format,{type:'image',mime_type:'image/png',aspect_ratio:'4:5',image_size:'1K'});
+  assert.equal(output.toString(),'image-bytes');assert.equal(headers['x-goog-api-key'],TEST_KEY);assert.ok(!('store' in payload));assert.deepEqual(payload.generationConfig,{responseModalities:['TEXT','IMAGE'],imageConfig:{aspectRatio:'4:5'}});
 });
-test('pesquisa só é aceita com chamada de busca e fontes reais retornadas pela API',async()=>{
-  const gemini=new Gemini(async()=>response([{type:'text',text:'Notícia inventada com URL no texto https://example.org'}]));
+test('pesquisa só é aceita com consultas e fontes retornadas pelo Google',async()=>{
+  const gemini=new Gemini(async()=>new Response(JSON.stringify({candidates:[{content:{parts:[{text:'Notícia inventada com URL https://example.org'}]},finishReason:'STOP'}]})));
   await assert.rejects(gemini.research(TEST_KEY,validateBrief(brief),MODELS),/fontes verificáveis/);
 });
 test('erros do provedor nunca expõem chave ou corpo cru',async()=>{

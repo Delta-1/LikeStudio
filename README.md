@@ -73,7 +73,7 @@ Faça backup do diretório de dados completo, incluindo o segredo de cifragem. A
 
 ## Modelos padrão
 
-Conferidos na documentação oficial em 25/10/2026; podem ser alterados em Ajustes → Modelos de IA.
+Preferências iniciais, conferidas na documentação oficial em 25/10/2026. Antes de gerar, o sistema consulta os modelos retornados para a chave conectada e substitui preferências indisponíveis por modelos compatíveis. Ajustes → Modelos de IA também oferece **Ajustar automaticamente**.
 
 | Etapa | Modelo |
 | --- | --- |
@@ -82,7 +82,7 @@ Conferidos na documentação oficial em 25/10/2026; podem ser alterados em Ajust
 | Narração | `gemini-3.8-flash-lite-tts` |
 | Cenas de vídeo | `gemini-omni-1.1-flash` |
 
-Integração REST via Interactions API (`/v1beta/interactions`). As respostas são extraídas de `steps[].content[]`, conforme o contrato REST, sem depender de campos de conveniência exclusivos do SDK.
+Pesquisa, roteiro, imagens e narração usam o endpoint REST `models/{model}:generateContent`, com leitura de `candidates[].content.parts[]` e `groundingMetadata`. Vídeos Omni usam a Interactions API com leitura de `steps[].content[]`. A seleção respeita a modalidade e os métodos retornados por `models.list`. Áudio PCM de modelos anteriores é convertido para WAV antes de montar o vídeo. Solicitações de roteiro explicitamente rejeitadas por campo de schema desconhecido podem ser reenviadas uma vez com o formato REST alternativo documentado; falhas de cota, créditos ou timeout não repetem a geração automaticamente.
 
 A chave precisa ter acesso aos modelos escolhidos, cota e faturamento. **O uso é cobrado pelo Google.** A validação lista modelos; não garante cota de geração. Não há geração fictícia ou fallback silencioso em produção. Erros de permissão, cota, modelo, bloqueio ou timeout aparecem na criação.
 
