@@ -21,12 +21,18 @@ Os prompts de pesquisa, direção editorial, roteiro e imagens estão em `lib/co
 - Vídeo com cenas geradas: Gemini Omni Flash + textos compostos pelo servidor + áudio retornado pelo modelo. O prompt solicita aproximadamente 8 segundos por cena; a duração efetiva depende do modelo.
 - Notícias por período, URLs efetivamente retornadas na busca, resumo consultável e sugestões do Google em iframe isolado.
 - Idiomas do conteúdo: português, espanhol e inglês.
-- Modelos de conteúdo prontos, quatro estilos visuais, tom e instruções opcionais.
+- Modelos de conteúdo prontos, cinco estilos visuais, tom e instruções opcionais.
 - Identidade de marca aplicada a cada projeto; temas claro/escuro.
 - Fila real, cancelamento, retomada com checkpoints e preservação de arquivos concluídos.
 - Edição de textos e legenda, revisão marcada pelo usuário, downloads individuais e pacote ZIP com fontes/roteiro.
 - Chaves Gemini cifradas com AES-256-GCM no servidor. Cookie de sessão HttpOnly e isolamento por espaço.
 - SQLite e mídia persistentes; sem necessidade de uma chave global do dono do sistema.
+
+## Modelo visual padrão: CAPISOL Solar
+
+Novas criações começam no estilo **CAPISOL Solar**, baseado no painel de referência fornecido: azul-marinho `#0B2D5B`, amarelo `#F6C300`, branco `#FFFFFF`, cinza `#E9EEF4`, títulos geométricos em negrito (Montserrat quando instalada, DejaVu Sans no Docker), fotos ilustrativas de painéis, casas e técnicos, curvas solares e cantos arredondados. A marca configurada é preservada; sem nome configurado, o modelo usa CAPISOL. O sistema compõe a assinatura tipográfica e os elementos gráficos; não reproduz o símbolo original da capivara.
+
+A aba Modelos oferece institucional, serviços, economia, guia, vídeo e orçamento. No assistente, escolha o objetivo (também promoção e depoimento). Roteiro, imagem, cena gerada e composição PNG/MP4 compartilham a direção visual. Capas escuras e internas claras mantêm a hierarquia, com chamada final e margem para Stories/Reels. A paleta solar é fixa; os outros estilos continuam usando a cor configurada. As criações anteriores mantêm sua identidade original. O modelo não copia a alegação de 95% nem inventa preços, depoimentos ou contatos.
 
 ## Executar
 
