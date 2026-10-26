@@ -61,5 +61,6 @@ test('retomar uma tarefa antiga resolve modelos ausentes e preserva pesquisa pro
   provider.resolveModels=async(key,configured,required)=>selectModels(catalog,configured,required);
   store.createWorkspace('workspace');store.settings('workspace',{},TEST_KEY);
   const runner=new JobRunner(store,provider);t.after(async()=>{runner.stop();while(runner.controllers.size) await new Promise(r=>setTimeout(r,10));store.close();await rm(dir,{recursive:true,force:true});});
-  const job=runner.create('workspace',brief);const done=await waitFor(()=>store.job(job.id,'workspace'));assert.equal(done.status,'completed',done.error);assert.equal(done.models.text,'gemini-2.5-flash');assert.equal(done.models.image,'gemini-2.5-flash-image');
+  store.save({id:'old-model-job',workspace:'workspace',brief:validateBrief(brief),brand:{color:'#8b5cf6'},models:{...MODELS},status:'failed',stage:'Falha no roteiro',progress:8,createdAt:new Date().toISOString(),checkpoints:{images:[],slides:[],voices:[],scenes:[]},research:{summary:'Pesquisa já concluída',sources:[{title:'Fonte',url:'https://example.org/fonte'}],checkedAt:new Date().toISOString()}});
+  const job=runner.retry('old-model-job','workspace');const done=await waitFor(()=>store.job(job.id,'workspace'));assert.equal(done.status,'completed',done.error);assert.equal(done.models.text,'gemini-2.5-flash');assert.equal(done.models.image,'gemini-2.5-flash-image');assert.equal(provider.calls.research,0);assert.equal(provider.calls.script,1);
 });
